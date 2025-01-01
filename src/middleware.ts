@@ -9,7 +9,11 @@ import {
 //   'Invoices/new',
 // ]);
 
-const isPublic = createRouteMatcher(['/']);
+const isPublic = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+]);
 
 export default clerkMiddleware(
   async (auth, request) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { db } from '@/db';
-import { Invoices } from '@/db/schema';
+import { Invoices, Customers } from '@/db/schema';
 import {
   Table,
   TableBody,
@@ -20,11 +20,51 @@ import Container from '@/components/Container';
 
 import { cn } from '@/lib/utils';
 
+import { auth } from '@clerk/nextjs/server';
+
+import { eq, isNull, and } from 'drizzle-orm';
+
 export default async function Dashboard() {
-  const results = await db
-    .select()
-    .from(Invoices);
-  console.log(results);
+  const { userId, orgId } = await auth();
+
+  if (!userId) {
+    return;
+  }
+
+  let results;
+  if (orgId) {
+    results = await db
+      .select()
+      .from(Invoices)
+      .innerJoin(
+        Customers,
+        eq(Invoices.customerId, Customers.id)
+      )
+      .where(eq(Invoices.OrganizationId, orgId));
+  } else {
+    results = await db
+      .select()
+      .from(Invoices)
+      .innerJoin(
+        Customers,
+        eq(Invoices.customerId, Customers.id)
+      )
+      .where(
+        and(
+          eq(Invoices.userId, userId),
+          isNull(Invoices.OrganizationId)
+        )
+      );
+  }
+
+  const invoices = results?.map(
+    ({ invoices, customers }) => {
+      return {
+        ...invoices,
+        customer: customers,
+      };
+    }
+  );
   return (
     <main className='h-full'>
       <Container>
@@ -63,7 +103,7 @@ export default async function Dashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {results.map((result) => (
+            {invoices.map((result) => (
               <TableRow
                 key={result.id}
                 className='hover:bg-gray-300'
@@ -88,7 +128,7 @@ export default async function Dashboard() {
                     href={`/invoices/${result.id}`}
                     className='font-semibold block'
                   >
-                    empty
+                    {result.customer.name}
                   </Link>
                 </TableCell>
                 <TableCell className='border-b border-gray-300 p-0 '>
@@ -96,7 +136,7 @@ export default async function Dashboard() {
                     href={`/invoices/${result.id}`}
                     className='block'
                   >
-                    email
+                    {result.customer.email}
                   </Link>
                 </TableCell>
                 <TableCell className='border-b border-gray-300 p-0 '>
