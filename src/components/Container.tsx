@@ -1,14 +1,11 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface ContainerProps
-  extends React.ComponentProps<'div'> {}
-
 const Container = ({
   children,
   className,
   ...props
-}: ContainerProps) => {
+}: React.ComponentProps<'div'>) => {
   return (
     <div
       {...props}

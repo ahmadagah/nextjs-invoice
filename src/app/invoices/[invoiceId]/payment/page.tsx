@@ -1,6 +1,6 @@
 import { db } from '@/db';
 
-import { eq, is } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 
 import Container from '@/components/Container';

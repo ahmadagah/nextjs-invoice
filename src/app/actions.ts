@@ -73,7 +73,6 @@ export default async function createInvoice(
       id: Invoices.id,
     });
 
-  const { data, error } =
     await resend.emails.send({
       from: 'Invoice <info@code98.app>',
       to: [email],

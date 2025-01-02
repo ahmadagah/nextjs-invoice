@@ -6,7 +6,6 @@ import {
   Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -66,11 +65,11 @@ InvoiceCreatedEmail.PreviewProps = {
 
 export default InvoiceCreatedEmail;
 
-const logo = {
-  borderRadius: 21,
-  width: 42,
-  height: 42,
-};
+// const logo = {
+//   borderRadius: 21,
+//   width: 42,
+//   height: 42,
+// };
 
 const main = {
   backgroundColor: '#ffffff',
