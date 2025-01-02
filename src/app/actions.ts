@@ -16,9 +16,17 @@ import { eq, and, isNull } from 'drizzle-orm';
 
 import Stripe from 'stripe';
 
+import { Resend } from 'resend';
+
 const stripe = new Stripe(
   String(process.env.STRIPE_API_SECRET)
 );
+
+const resend = new Resend(
+  process.env.RESEND_API_KEY
+);
+
+import { InvoiceCreatedEmail } from '@/email/invoice-created';
 
 export default async function createInvoice(
   formData: FormData
@@ -63,6 +71,16 @@ export default async function createInvoice(
     })
     .returning({
       id: Invoices.id,
+    });
+
+  const { data, error } =
+    await resend.emails.send({
+      from: 'Invoice <info@code98.app>',
+      to: [email],
+      subject: 'You have a new invoice',
+      react: InvoiceCreatedEmail({
+        InvoiceId: result[0].id,
+      }),
     });
 
   redirect(`/invoices/${result[0].id}`);
