@@ -13,6 +13,12 @@ import { db } from '@/db';
 import { auth } from '@clerk/nextjs/server';
 import { eq, and, isNull } from 'drizzle-orm';
 
+import Stripe from 'stripe';
+
+const stripe = new Stripe(
+  String(process.env.STRIPE_API_SECRET)
+);
+
 export default async function createInvoice(
   formData: FormData
 ) {

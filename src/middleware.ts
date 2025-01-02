@@ -13,6 +13,7 @@ const isPublic = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/invoices/(.*)/payment',
 ]);
 
 export default clerkMiddleware(
