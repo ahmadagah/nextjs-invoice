@@ -15,33 +15,38 @@ import {
   updateStatusAction,
 } from '@/app/actions';
 import Stripe from 'stripe';
+import { resolve } from 'path';
 
 const stripe = new Stripe(
   String(process.env.STRIPE_API_SECRET)
 );
 
 interface InvoicePageProps {
-  params: { invoiceId: string };
-  searchParams: {
+  params: Promise<{ invoiceId: string }>;
+  searchParams: Promise<{
     status: string;
     session_id: string;
-  };
+  }>;
 }
 
 export default async function Invoice({
   params,
   searchParams,
 }: InvoicePageProps) {
+
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+
   const invoiceId = Number.parseInt(
-    params.invoiceId
+    resolvedParams.invoiceId
   );
 
-  const sessionId = searchParams.session_id;
+  const sessionId = resolvedSearchParams.session_id;
   const isSuccess =
     sessionId &&
-    searchParams.status === 'success';
+    resolvedSearchParams.status === 'success';
   const isCancelled =
-    searchParams.status === 'cancelled';
+  resolvedSearchParams.status === 'cancelled';
   let isError = isSuccess && !sessionId;
 
   if (Number.isNaN(invoiceId)) {
